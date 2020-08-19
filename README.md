@@ -1,7 +1,7 @@
 ---
 description: >-
   Follow this link to see the writeup on gitbooks
-  (https://planet511.gitbook.io/hack-the-box-writeups/)
+  (https://app.gitbook.com/@planet511/s/hack-the-box-writeups/)
 ---
 
 # Home Page
