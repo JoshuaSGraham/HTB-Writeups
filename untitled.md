@@ -20,8 +20,6 @@ To recon the box we use a tool called Nmap. To do this we run the command:
 nmap -sC -sV 10.10.10.181
 ```
 
-But what does this do? well from looking at the man page of the tool we can see that
-
 | Command | Explanation |
 | :---: | :---: |
 | -sC | equivalent to --script=default |
@@ -71,7 +69,7 @@ Upon navigating ourselves into the GitHub repository we can see that it contains
 
 ![webshell.txt output](.gitbook/assets/vmplayer_ft4vk2b3ey.png)
 
-From here we can now rerun our gobuster scan but this time we can use our webshell wordlist to specifically search for the more popular webshells in the hope that we find the webshell left behind by Xh4H.
+From here we can now re-run our gobuster scan but this time we can use our webshell wordlist to specifically search for the more popular webshells in the hope that we find the webshell left behind by Xh4H.
 
 ```text
 gobuster dir -u http://10.10.10.181:80 -w /root/htb/traceback/webshell.txt
