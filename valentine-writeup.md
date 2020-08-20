@@ -186,5 +186,36 @@ We can get the file user.txt by moving to the user hype's desktop
 
 ## Root PrivEsc
 
+Going through the list of usual privillege escallation commands, we find that `history` returns some interesting commands.
 
+![](.gitbook/assets/vmplayer_wkwunuhc5h.png)
+
+From command 13 onwards was us so we can ignore them. But looking at commands 9 through to 12 we can clearly see that the user has been using tmux. This immediately caught my eye and interest. This is because tmux has some cool ways to priv esc.
+
+By running `tmux ls` we see that there are currently no tmux sessions running. But looking a bit closer we see that the owner of the box has been using come flags with his tmux usage.
+
+| Command | Explanation |
+| :--- | :--- |
+| -L | sets the socket name |
+| -S | sets the socket path |
+
+So with this new found knowledge we can now understand that user went to the .devs folder, started a tmux session with the socket `dev_sess`. Then the user tried to attach to that session with `-a t dev_sess` on line 10. But that is not the correct way to do that. The user then runs the help command to find out how to perform the action he wants to perform, and then on line 12 manages to connect to his tmux session that he crated.
+
+So, by taking a closer look at the socket
+
+![](.gitbook/assets/vmplayer_jgebdcudx7.png)
+
+We can see that the permissions for the socket are that its owned by root, but its group is hype as well as the file being readable by group! This means we can access it.
+
+All this means is that we can recreate what the other user did to get root access.
+
+use the command:
+
+```text
+tmux -S /.devs/dev_sess
+```
+
+![](.gitbook/assets/vmplayer_qu8n4brj3v.png)
+
+We are now root and can get the root.txt flag.
 
