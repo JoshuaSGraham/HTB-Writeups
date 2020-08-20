@@ -69,7 +69,7 @@ Upon navigating ourselves into the GitHub repository we can see that it contains
 
 ![webshell.txt output](.gitbook/assets/vmplayer_ft4vk2b3ey.png)
 
-From here we can now re-run our gobuster scan but this time we can use our webshell wordlist to specifically search for the more popular webshells in the hope that we find the webshell left behind by Xh4H.
+From here we can now re-run our gobuster scan but this time we can use our webshell word list to specifically search for the more popular webshells in the hope that we find the webshell left behind by Xh4H.
 
 ```text
 gobuster dir -u http://10.10.10.181:80 -w /root/htb/traceback/webshell.txt
@@ -140,7 +140,7 @@ What this is doing is using the fact that we have python installed on the victim
 
 ## User PrivEsc
 
-Now that we have a basic user shell on the machine it is time to do some basic enumeration. My usuall first few commands that I always eneter on a linux machine are as follows:
+Now that we have a basic user shell on the machine it is time to do some basic enumeration. My usual first few commands that I always eneter on a linux machine are as follows:
 
 * [ ] whoami
 * [ ] hostname

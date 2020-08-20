@@ -180,3 +180,11 @@ ssh -i key_decrypted hype@10.10.10.79
 
 ![](.gitbook/assets/vmplayer_vimqdj4vm6.png)
 
+We can get the file user.txt by moving to the user hype's desktop
+
+![user.txt](.gitbook/assets/vmplayer_ckipmx29y1.png)
+
+## Root PrivEsc
+
+
+
