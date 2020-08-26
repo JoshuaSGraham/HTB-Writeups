@@ -4,4 +4,5 @@
 * [Traceback](traceback-writeup.md)
 * [Valentine](valentine-writeup.md)
 * [Sunday](sunday-writeup.md)
+* [Jerry](jerry-writeup.md)
 
